@@ -1,0 +1,57 @@
+﻿@model IEnumerable<WebApp.Models.Objective>
+ 
+<h2>Список пользователей</h2>
+<p><a asp-action="CreateObjective">Добавить задачу</a></p>
+<table class="table">
+    <tr>
+        <th>Пользователь</th>
+        <th>Пароль</th>
+        <th>Задача</th>
+        <th>Описание</th>
+        <th>Поставленная дата</th>
+        <th>Статус</th>
+        <th>Приоритет</th>
+        <th>Метки</th>
+    </tr>
+    @foreach (var o in Model)
+    {
+        <tr>
+            <td>@o.User.UserName</td>
+            <td>@o.Group.GroupName</td>
+            <td>@o.Title</td>
+            <td>@o.Description</td>
+            <td>@o.DueDate</td>
+            <td>@o.Status.StatusName</td>
+            <td>@o.Priority</td>
+            <td>@string.Join(", ", o.Labels.Select(l => l.LabelName))</td>
+        </tr>
+    }
+</table>
+
+@*
+<table class="table">
+    <tr>
+        <th>Пользователь</th>
+        <th>Группа</th>
+        <th>Задача</th>
+        <th>Описание</th>
+        <th>Поставленная дата</th>
+        <th>Статус</th>
+        <th>Приоритет</th>
+        <th>Метки</th>
+    </tr>
+    @foreach (var o in Model)
+    {
+        <tr>
+            <td>@o.User.UserName</td>
+            <td>@o.Group.GroupName</td>
+            <td>@o.Title</td>
+            <td>@o.Description</td>
+            <td>@o.DueDate</td>
+            <td>@o.Status.StatusName</td>
+            <td>@o.Priority</td>
+            <td>@string.Join(", ", o.Labels.Select(l => l.LabelName))</td>
+        </tr>
+    }
+</table>
+*@
