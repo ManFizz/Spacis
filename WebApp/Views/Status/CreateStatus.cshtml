@@ -1,0 +1,12 @@
+@model WebApp.Models.Status
+ 
+<h2>Добавление статуса</h2>
+<form asp-action="CreateStatus" asp-controller="Status">
+    <p>
+        <label asp-for="StatusName">Назвавние статуса</label><br />
+        <input type="text" asp-for="StatusName" />
+    </p>
+    <p>
+        <input type="submit" value="Отправить" />
+    </p>
+</form>
