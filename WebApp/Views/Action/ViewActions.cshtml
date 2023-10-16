@@ -1,0 +1,20 @@
+@model IEnumerable<WebApp.Models.Action>
+
+
+<h2>Список действий</h2>
+@* <p><a asp-action="CreateAction">Добавить действие</a></p> *@
+<table class="table">
+    <tr>
+        <th>Пользователь</th>
+        <th>Дата</th>
+        <th>действие</th>
+    </tr>
+    @foreach (var a in Model)
+    {
+        <tr>
+            <td>@a.User.UserName</td>
+            <td>@a.DateTime</td>
+            <td>@a.ActionDescription</td>
+        </tr>
+    }
+</table>

@@ -1,0 +1,20 @@
+@model IEnumerable<WebApp.Models.Label>
+
+
+<h2>Список меток</h2>
+@* <p><a asp-action="CreateLabel">Добавить метку</a></p> *@
+<table class="table">
+    <tr>
+        <th>Пользователь</th>
+        <th>Метка</th>
+        <th>Кол-во задач</th>
+    </tr>
+    @foreach (var l in Model)
+    {
+        <tr>
+            <td>@l.User.UserName</td>
+            <td>@l.LabelName</td>
+            <td>@l.Objectives.Count</td>
+        </tr>
+    }
+</table>
