@@ -35,7 +35,7 @@ public sealed class ApplicationContext : DbContext
         var admin = new User()
         {
             UserId = Guid.NewGuid(),
-            UserName = "admin",
+            Login = "admin",
             PasswordHash = "admin",
         };
         modelBuilder.Entity<User>().HasData(admin);

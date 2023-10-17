@@ -1,4 +1,10 @@
-﻿<!DOCTYPE html>
+﻿@functions{
+     public string NavManage(string controller)
+     {
+         return ViewContext.RouteData.Values["Controller"]!.ToString() == controller ? "active" : "";
+     }
+ }
+<!DOCTYPE html>
 <html lang="en" data-bs-theme="dark">
 <head>
     <meta charset="utf-8"/>
@@ -9,38 +15,45 @@
     <link rel="stylesheet" href="~/WebApp.styles.css" asp-append-version="true"/>
 </head>
 <body>
-<header>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar border-bottom box-shadow mb-3">
-        <div class="container-fluid">
-            <a class="navbar-brand" asp-area="" asp-controller="Index" asp-action="Index">To/do</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav flex-grow-1">
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Objective" asp-action="ViewObjectives">Tasks</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="User" asp-action="List">Users</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Group" asp-action="ViewGroups">Groups</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Label" asp-action="ViewLabels">Labels</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Status" asp-action="ViewStatuses">Statuses</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Action" asp-action="ViewActions">Actions</a>
-                    </li>
-                </ul>
-            </div>
+<header class="p-3 text-bg-dark">
+    <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+            <a class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none fs-3 pe-3" asp-area=""
+               asp-controller="Index" asp-action="Index">To/do</a>
+            <ul class="nav nav-tabs col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                <li class="nav-item">
+                    <a class="nav-link px-2 @(NavManage("Objective"))" asp-area="" asp-controller="Objective" 
+                       asp-action="DisplayList">Tasks</a>
+                </li>
+                <li>
+                    <a class="nav-link px-2 @(NavManage("User"))" asp-area="" asp-controller="User"
+                       asp-action="DisplayList">Users</a>
+                </li>
+                <li>
+                    <a class="nav-link px-2 @(NavManage("Group"))" asp-area="" asp-controller="Group"
+                       asp-action="DisplayList">Groups</a>
+                </li>
+                <li>
+                    <a class="nav-link px-2 @(NavManage("Label"))" asp-area="" asp-controller="Label"
+                       asp-action="DisplayList">Labels</a>
+                </li>
+                <li>
+                    <a class="nav-link px-2 @(NavManage("Status"))" asp-area="" asp-controller="Status"
+                       asp-action="DisplayList">Statuses</a>
+                </li>
+                <li>
+                    <a class="nav-link px-2 @(NavManage("Action"))" asp-area="" asp-controller="Action"
+                       asp-action="DisplayList">Actions</a>
+                </li>
+            </ul>
+            @*<div class="text-end">
+                <button type="button" class="btn btn-outline-light me-2"
+                        asp-controller="User" asp-action="Login">Войти</button>
+                <button type="button" class="btn btn-warning"
+                        asp-controller="User" asp-action="Register">Зарегестрироваться</button>
+            </div>*@
         </div>
-    </nav>
+    </div>
 </header>
 <div class="container">
     <main role="main" class="pb-3">

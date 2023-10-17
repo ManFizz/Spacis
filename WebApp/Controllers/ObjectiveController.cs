@@ -7,7 +7,7 @@ namespace WebApp.Controllers;
 public class ObjectiveController(ApplicationContext db) : MainController(db)
 {
     
-    public async Task<IActionResult> ViewObjectives()
+    public async Task<IActionResult> DisplayList()
     {
         ViewData["Title"] = "Objectives";
         return View(await db.Objectives
@@ -17,16 +17,12 @@ public class ObjectiveController(ApplicationContext db) : MainController(db)
             .Include(o => o.Labels)
             .ToListAsync());
     }
-    public IActionResult CreateObjective()
-    {
-        ViewData["Title"] = "Create object";
-        return View();
-    }
+    
     [HttpPost]
     public async Task<IActionResult> CreateObjective(Objective objective)
     {
         db.Objectives.Add(objective);
         await db.SaveChangesAsync();
-        return RedirectToAction("ViewObjectives");
+        return RedirectToAction("DisplayList");
     }
 }

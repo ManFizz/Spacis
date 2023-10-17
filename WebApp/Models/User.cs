@@ -6,11 +6,15 @@ namespace WebApp.Models
     public class User
     {
         [Key]
-        public Guid UserId { get; set; }
+        public Guid UserId { get; set; } = Guid.NewGuid();
         
         [Required]
-        public string UserName { get; set; }
+        [StringLength(24, MinimumLength = 6)]
+        public string Login { get; set; }
+        
         [Required]
+        [StringLength(24, MinimumLength = 6)]
+        [Display(Name = "Password")]
         public string PasswordHash  { get; set; }
 
         public List<Label> Labels { get; } = new();

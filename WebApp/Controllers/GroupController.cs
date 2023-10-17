@@ -6,7 +6,7 @@ namespace WebApp.Controllers;
 
 public class GroupController(ApplicationContext db) : MainController(db)
 {
-    public Task<IActionResult> ViewGroups()
+    public Task<IActionResult> DisplayList()
     {
         ViewData["Title"] = "Groups";
         return Task.FromResult<IActionResult>(View(db.Groups

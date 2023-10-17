@@ -6,12 +6,12 @@ namespace WebApp.Controllers;
 
 public class UserController(ApplicationContext db) : MainController(db)
 {
-    public Task<IActionResult> List()
+    public Task<IActionResult> DisplayList()
     {
         ViewData["Title"] = "Users";
         return Task.FromResult<IActionResult>(View(db.Users));
     }
-    
+
     public IActionResult Create()
     {
         ViewData["Title"] = "Create user";
@@ -22,7 +22,7 @@ public class UserController(ApplicationContext db) : MainController(db)
     {
         db.Users.Add(user);
         await db.SaveChangesAsync();
-        return RedirectToAction("List");
+        return RedirectToAction("DisplayList");
     }
     
     public async Task<IActionResult> Edit(Guid? id)
@@ -44,7 +44,7 @@ public class UserController(ApplicationContext db) : MainController(db)
         Console.WriteLine(user.UserId);
         db.Users.Update(user);
         await db.SaveChangesAsync();
-        return RedirectToAction("List");
+        return RedirectToAction("DisplayList");
     }
     
     [HttpPost]
@@ -56,6 +56,6 @@ public class UserController(ApplicationContext db) : MainController(db)
         var user = new User { UserId = id.Value };
         db.Entry(user).State = EntityState.Deleted;
         await db.SaveChangesAsync();
-        return RedirectToAction("List");
+        return RedirectToAction("DisplayList");
     }
 }

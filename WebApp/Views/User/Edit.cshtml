@@ -3,8 +3,8 @@
 <h2>Редактирование пользователя</h2>
 <form asp-action="Edit" asp-controller="User" asp-route-UserId="@Model.UserId">
     <p>
-        <label asp-for="UserName">Имя</label><br />
-        <input type="text" asp-for="UserName" />
+        <label asp-for="Login">Имя</label><br />
+        <input type="text" asp-for="Login" />
     </p>
     <p>
         <label asp-for="PasswordHash">Пароль</label><br />

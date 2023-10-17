@@ -6,7 +6,7 @@ namespace WebApp.Controllers;
 
 public class StatusController(ApplicationContext db) : MainController(db)
 {
-    public Task<IActionResult> ViewStatuses()
+    public Task<IActionResult> DisplayList()
     {
         ViewData["Title"] = "Statuses";
         return Task.FromResult<IActionResult>(View(db.Statuses
@@ -22,6 +22,6 @@ public class StatusController(ApplicationContext db) : MainController(db)
     {
         db.Statuses.Add(status);
         await db.SaveChangesAsync();
-        return RedirectToAction("ViewStatuses");
+        return RedirectToAction("DisplayList");
     }
 }

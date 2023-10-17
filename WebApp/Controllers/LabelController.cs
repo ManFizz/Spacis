@@ -6,7 +6,7 @@ namespace WebApp.Controllers;
 
 public class LabelController(ApplicationContext db) : MainController(db)
 {
-    public Task<IActionResult> ViewLabels()
+    public Task<IActionResult> DisplayList()
     {
         ViewData["Title"] = "Labels";
         return Task.FromResult<IActionResult>(View(db.Labels
@@ -14,16 +14,11 @@ public class LabelController(ApplicationContext db) : MainController(db)
             .Include(l => l.Objectives)));
     }
     
-    public IActionResult CreateLabel()
-    {
-        ViewData["Title"] = "Create status";
-        return View();
-    }
     [HttpPost]
     public async Task<IActionResult> CreateLabel(Label label)
     {
         db.Labels.Add(label);
         await db.SaveChangesAsync();
-        return RedirectToAction("ViewLabels");
+        return RedirectToAction("DisplayList");
     }
 }

@@ -6,7 +6,7 @@ namespace WebApp.Controllers;
 
 public class ActionController(ApplicationContext db) : MainController(db)
 {
-    public Task<IActionResult> ViewActions()
+    public Task<IActionResult> DisplayList()
     {
         ViewData["Title"] = "Actions";
         return Task.FromResult<IActionResult>(View(db.Actions

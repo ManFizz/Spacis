@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<WebApp.Models.Objective>
  
-<h2>Список пользователей</h2>
-<p><a asp-action="CreateObjective">Добавить задачу</a></p>
+<h2>Список задач</h2>
+@* <p><a asp-action="CreateObjective">Добавить задачу</a></p> *@
 <table class="table">
     <tr>
         <th>Пользователь</th>
@@ -16,7 +16,7 @@
     @foreach (var o in Model)
     {
         <tr>
-            <td>@o.User.UserName</td>
+            <td>@o.User.Login</td>
             <td>@o.Group.GroupName</td>
             <td>@o.Title</td>
             <td>@o.Description</td>
@@ -43,7 +43,7 @@
     @foreach (var o in Model)
     {
         <tr>
-            <td>@o.User.UserName</td>
+            <td>@o.User.Login</td>
             <td>@o.Group.GroupName</td>
             <td>@o.Title</td>
             <td>@o.Description</td>

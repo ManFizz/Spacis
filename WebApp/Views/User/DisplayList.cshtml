@@ -13,7 +13,7 @@
     @foreach (var u in Model)
     {
         <tr>
-            <td>@u.UserName</td>
+            <td>@u.Login</td>
             <td>@u.PasswordHash</td>
             <td>
                 <a asp-action="Edit" asp-controller="User" asp-route-id="@u.UserId">Изменить</a>
