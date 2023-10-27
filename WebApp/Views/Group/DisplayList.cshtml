@@ -1,5 +1,7 @@
 @model IEnumerable<WebApp.Models.Group>
-
+@{
+    ViewBag.Title = "Список групп";
+}
 
 <h2>Список групп</h2>
 @* <p><a asp-action="CreateGroup">Добавить группу</a></p> *@
@@ -13,8 +15,8 @@
     @foreach (var g in Model)
     {
         <tr>
-            <td>@g.User.Login</td>
-            <td>@g.GroupName</td>
+            <td>@g.User.UserName</td>
+            <td>@g.Name</td>
             <td>@g.Priority</td>
             <td>@g.Objectives.Count</td>
         </tr>

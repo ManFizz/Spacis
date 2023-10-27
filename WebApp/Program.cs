@@ -1,24 +1,27 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WebApp.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// получаем строку подключения из файла конфигурации
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
  
-// добавляем контекст ApplicationContext в качестве сервиса в приложение
 builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlite(connection));
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddTransient<IPasswordValidator<User>,
+    CustomPasswordValidator>(serv => new CustomPasswordValidator(6));
+builder.Services.AddTransient<IUserValidator<User>, CustomUserValidator>();
+
+builder.Services.AddIdentity<User, IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationContext>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -27,6 +30,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

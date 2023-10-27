@@ -1,5 +1,7 @@
 @model IEnumerable<WebApp.Models.Label>
-
+@{
+    ViewBag.Title = "Список меток";
+}
 
 <h2>Список меток</h2>
 @* <p><a asp-action="CreateLabel">Добавить метку</a></p> *@
@@ -12,8 +14,8 @@
     @foreach (var l in Model)
     {
         <tr>
-            <td>@l.User.Login</td>
-            <td>@l.LabelName</td>
+            <td>@l.User.UserName</td>
+            <td>@l.Name</td>
             <td>@l.Objectives.Count</td>
         </tr>
     }

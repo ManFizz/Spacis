@@ -1,61 +1,113 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using WebApp.Models;
+using WebApp.ViewModels;
 
 namespace WebApp.Controllers;
 
-public class UserController(ApplicationContext db) : MainController(db)
+public class UserController(UserManager<User> userManager, ApplicationContext db) : MainController(db)
 {
-    public Task<IActionResult> DisplayList()
+    public IActionResult DisplayList()
     {
-        ViewData["Title"] = "Users";
-        return Task.FromResult<IActionResult>(View(db.Users));
+        return View(userManager.Users.ToList());
     }
 
     public IActionResult Create()
     {
-        ViewData["Title"] = "Create user";
         return View();
     }
-    [HttpPost]
-    public async Task<IActionResult> Create(User user)
-    {
-        db.Users.Add(user);
-        await db.SaveChangesAsync();
-        return RedirectToAction("DisplayList");
-    }
-    
-    public async Task<IActionResult> Edit(Guid? id)
-    {
-        if (id == null)
-            return NotFound();
 
-        var user = await db.Users.FirstOrDefaultAsync(p => p.UserId == id);
+    [HttpPost]
+    public async Task<IActionResult> Create(CreateUserViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+        
+        var user = new User { Email = model.Email, UserName = model.Login, DateOfBirth = model.DateOfBirth };
+        var result = await userManager.CreateAsync(user, model.Password);
+        if (result.Succeeded)
+            return RedirectToAction("DisplayList");
+
+        foreach (var error in result.Errors) 
+            ModelState.AddModelError(string.Empty, error.Description);
+        
+        return View(model);
+    }
+
+    public async Task<IActionResult> Edit(string id)
+    {
+        var user = await userManager.FindByIdAsync(id);
         if (user == null)
             return NotFound();
         
-        Console.WriteLine(user.UserId);
-        ViewData["Title"] = "Edit user";
-        return View(user);
+        var model = new EditUserViewModel {Id = user.Id, Email = user.Email!, Login = user.UserName!, DateOfBirth = user.DateOfBirth };
+        return View(model);
     }
+
     [HttpPost]
-    public async Task<IActionResult> Edit(User user)
+    public async Task<IActionResult> Edit(EditUserViewModel model)
     {
-        Console.WriteLine(user.UserId);
-        db.Users.Update(user);
-        await db.SaveChangesAsync();
+        if (!ModelState.IsValid)
+            return View(model);
+        
+        var user = await userManager.FindByIdAsync(model.Id);
+        if (user == null)
+            return View(model);
+        
+        user.Email = model.Email;
+        user.UserName = model.Login;
+        user.DateOfBirth = model.DateOfBirth;
+                 
+        var result = await userManager.UpdateAsync(user);
+        if (result.Succeeded)
+            return RedirectToAction("DisplayList");
+        
+        foreach (var error in result.Errors) ModelState.AddModelError(string.Empty, error.Description);
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<ActionResult> Delete(string id)
+    {
+        var user = await userManager.FindByIdAsync(id);
+        if (user != null)
+        {
+            var result = await userManager.DeleteAsync(user);
+        }
         return RedirectToAction("DisplayList");
     }
     
-    [HttpPost]
-    public async Task<IActionResult> Delete(Guid? id)
+    public async Task<IActionResult> ChangePassword(string id)
     {
-        if (id == null)
+        var user = await userManager.FindByIdAsync(id);
+        if (user == null)
             return NotFound();
         
-        var user = new User { UserId = id.Value };
-        db.Entry(user).State = EntityState.Deleted;
-        await db.SaveChangesAsync();
-        return RedirectToAction("DisplayList");
+        var model = new ChangePasswordViewModel { Id = user.Id, Login = user.UserName!};
+        return View(model);
+    }
+ 
+    [HttpPost]
+    public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+        
+        var user = await userManager.FindByIdAsync(model.Id);
+        if (user == null)
+        {
+            ModelState.AddModelError(string.Empty, "Пользователь не найден");
+            return View(model);
+        }
+
+        var result =
+            await userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+        if (result.Succeeded)
+            return RedirectToAction("DisplayList");
+
+        foreach (var error in result.Errors)
+            ModelState.AddModelError(string.Empty, error.Description);
+
+        return View(model);
     }
 }

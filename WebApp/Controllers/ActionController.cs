@@ -8,7 +8,6 @@ public class ActionController(ApplicationContext db) : MainController(db)
 {
     public Task<IActionResult> DisplayList()
     {
-        ViewData["Title"] = "Actions";
         return Task.FromResult<IActionResult>(View(db.Actions
             .Include(a => a.User)));
     }

@@ -9,7 +9,6 @@ public class IndexController(ApplicationContext db) : MainController(db)
 {
     public IActionResult Index()
     {
-        ViewData["Title"] = "Welcome";
         return View();
     }
 }

@@ -8,7 +8,6 @@ public class GroupController(ApplicationContext db) : MainController(db)
 {
     public Task<IActionResult> DisplayList()
     {
-        ViewData["Title"] = "Groups";
         return Task.FromResult<IActionResult>(View(db.Groups
             .Include(g => g.User)
             .Include(g => g.Objectives)));

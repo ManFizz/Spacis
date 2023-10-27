@@ -8,7 +8,6 @@ public class LabelController(ApplicationContext db) : MainController(db)
 {
     public Task<IActionResult> DisplayList()
     {
-        ViewData["Title"] = "Labels";
         return Task.FromResult<IActionResult>(View(db.Labels
             .Include(l => l.User)
             .Include(l => l.Objectives)));

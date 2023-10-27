@@ -1,57 +1,63 @@
 ﻿@model IEnumerable<WebApp.Models.Objective>
- 
+@{
+    ViewBag.Title = "Список задач";
+}
+
 <h2>Список задач</h2>
 @* <p><a asp-action="CreateObjective">Добавить задачу</a></p> *@
-<table class="table">
-    <tr>
-        <th>Пользователь</th>
-        <th>Пароль</th>
-        <th>Задача</th>
-        <th>Описание</th>
-        <th>Поставленная дата</th>
-        <th>Статус</th>
-        <th>Приоритет</th>
-        <th>Метки</th>
-    </tr>
-    @foreach (var o in Model)
-    {
-        <tr>
-            <td>@o.User.Login</td>
-            <td>@o.Group.GroupName</td>
-            <td>@o.Title</td>
-            <td>@o.Description</td>
-            <td>@o.DueDate</td>
-            <td>@o.Status.StatusName</td>
-            <td>@o.Priority</td>
-            <td>@string.Join(", ", o.Labels.Select(l => l.LabelName))</td>
-        </tr>
-    }
-</table>
+<div class="d-md-flex">
+    <div class="col">
+        <table class="table table-hover">
+            <tr>
+                <th>Статус</th>
+                <th>Задача</th>
+                <th>Метки</th>
+                <th>Поставленная дата</th>
+            </tr>
+            @foreach (var o in Model)
+            {
+                <tr data-taskid="@o.Id" class="task-row">
+                    <td>@o.Status.Name</td>
+                    <td>@o.Title</td>
+                    <td>@string.Join(", ", o.Labels.Select(l => l.Name))</td>
+                    <td class="date-moment">@o.DueDate</td>
+                </tr>
+            }
+        </table>
+    </div>
+    <div class="col px-4">
+        <div class="text-center" id="task-info">
+            <span class="text-secondary">Нажмите на задачу, чтобы посмотреть её</span>
+        </div>
+    </div>
+</div>
 
-@*
-<table class="table">
-    <tr>
-        <th>Пользователь</th>
-        <th>Группа</th>
-        <th>Задача</th>
-        <th>Описание</th>
-        <th>Поставленная дата</th>
-        <th>Статус</th>
-        <th>Приоритет</th>
-        <th>Метки</th>
-    </tr>
-    @foreach (var o in Model)
-    {
-        <tr>
-            <td>@o.User.Login</td>
-            <td>@o.Group.GroupName</td>
-            <td>@o.Title</td>
-            <td>@o.Description</td>
-            <td>@o.DueDate</td>
-            <td>@o.Status.StatusName</td>
-            <td>@o.Priority</td>
-            <td>@string.Join(", ", o.Labels.Select(l => l.LabelName))</td>
-        </tr>
-    }
-</table>
-*@
+@section Scripts {
+    <script type="text/javascript">
+$(document).ready(function () {
+                $('.date-moment').each(function () { $(this).text((moment($(this).text(),"YYYY-MM-DDTHH:mm:ss")).fromNow()) });
+    
+                $('.task-row').click(function () {
+                    let taskId = $(this).data('taskid');
+                    let tr = $(this);
+                    $.ajax({
+                        url: '/Objective/GetObjectiveInfo',
+                        data: { sGuid: taskId },
+                        success: function (data) {
+                            let taskInfo = $('#task-info');
+                            taskInfo.html(data);
+                            taskInfo.removeClass("text-center");
+                            
+                            let dateElement = $('.formatted-date');
+                            let originalDate = moment(dateElement.text(), "YYYY-MM-DDTHH:mm:ss");
+                            let formattedDate = originalDate.fromNow();
+                            dateElement.text(formattedDate);
+                            
+                            $('.table-active').removeClass('table-active');
+                            tr.addClass('table-active');
+                    }
+                });
+            });
+        });
+    </script>
+}

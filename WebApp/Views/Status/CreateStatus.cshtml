@@ -1,10 +1,13 @@
 @model WebApp.Models.Status
- 
+@{
+    ViewBag.Title = "Добавление статуса";
+}
+
 <h2>Добавление статуса</h2>
 <form asp-action="CreateStatus" asp-controller="Status">
     <p>
-        <label asp-for="StatusName">Назвавние статуса</label><br />
-        <input type="text" asp-for="StatusName" />
+        <label asp-for="Name">Назвавние статуса</label><br />
+        <input type="text" asp-for="Name" />
     </p>
     <p>
         <input type="submit" value="Отправить" />

@@ -6,9 +6,9 @@ namespace WebApp.Models
     public class Status
     {
         [Key]
-        public Guid StatusId { get; set; }
+        public Guid Id { get; set; }
         [Required]
-        public string StatusName { get; set; }
+        public string Name { get; set; }
 
         public List<Objective> Objectives { get; } = new();
     }

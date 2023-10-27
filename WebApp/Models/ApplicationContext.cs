@@ -1,11 +1,12 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebApp.Models;
 
-public sealed class ApplicationContext : DbContext
+public sealed class ApplicationContext : IdentityDbContext<User>
 {
-    public DbSet<User> Users { get; set; } = null!;
     public DbSet<Objective> Objectives { get; set; } = null!;
     public DbSet<Label> Labels { get; set; } = null!;
     public DbSet<Group> Groups { get; set; } = null!;
@@ -22,7 +23,7 @@ public sealed class ApplicationContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseSqlite("Filename=MyDatabase.db");
-        optionsBuilder.LogTo(Console.WriteLine);
+        //optionsBuilder.LogTo(Console.WriteLine);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -34,54 +35,68 @@ public sealed class ApplicationContext : DbContext
         
         var admin = new User()
         {
-            UserId = Guid.NewGuid(),
-            Login = "admin",
+            Id = Guid.NewGuid().ToString(),
+            UserName = "admin",
             PasswordHash = "admin",
         };
         modelBuilder.Entity<User>().HasData(admin);
         
         var study = new Group()
         {
-            GroupId = Guid.NewGuid(),
-            UserId = admin.UserId,
-            GroupName = "Study",
+            Id = Guid.NewGuid(),
+            UserId = admin.Id,
+            Name = "Study",
             Priority = 7
         };
         modelBuilder.Entity<Group>().HasData(study);
         
         var inProgress = new Status()
         {
-            StatusId = Guid.NewGuid(),
-            StatusName = "In progress"
+            Id = Guid.NewGuid(),
+            Name = "In progress"
         };
         modelBuilder.Entity<Status>().HasData(inProgress);
         
         var spacis = new Objective()
         {
-            ObjectiveId = Guid.NewGuid(),
-            UserId = admin.UserId,
-            GroupId = study.GroupId,
+            Id = Guid.NewGuid(),
+            UserId = admin.Id,
+            GroupId = study.Id,
             Title = "Spacis project",
             Description = "Create website on c# using ASP.NET and Entity Framework",
             DueDate = new DateTime(2024, 1, 14),
-            StatusId = inProgress.StatusId,
+            StatusId = inProgress.Id,
             Priority = 99,
         };
         modelBuilder.Entity<Objective>().HasData(spacis);
+        
+        
+        var spacisTest = new Objective()
+        {
+            Id = Guid.NewGuid(),
+            UserId = admin.Id,
+            GroupId = study.Id,
+            Title = "Spacis test",
+            Description = "Test website for search bugs",
+            DueDate = new DateTime(2024, 2, 28),
+            StatusId = inProgress.Id,
+            Priority = 100,
+        };
+        modelBuilder.Entity<Objective>().HasData(spacisTest);
         
         var labels = new List<Label>
         {
             new()
             {
-                LabelId = Guid.NewGuid(),
-                UserId = admin.UserId,
-                LabelName = "Learn",
+                Id = Guid.NewGuid(),
+                UserId = admin.Id,
+                Name = "Learn",
             },
             new()
             {
-                LabelId = Guid.NewGuid(),
-                UserId = admin.UserId,
-                LabelName = "Deadline",
+                Id = Guid.NewGuid(),
+                UserId = admin.Id,
+                Name = "Deadline",
             }
         };
         modelBuilder.Entity<Label>().HasData(labels);
@@ -89,14 +104,16 @@ public sealed class ApplicationContext : DbContext
         // Записи для связи между Objective и Label
         var labelObjectives = labels.Select(label => new
         {
-            LabelsLabelId = label.LabelId,
-            ObjectivesObjectiveId = spacis.ObjectiveId
+            LabelsId = label.Id,
+            ObjectivesId = spacis.Id
         });
 
         modelBuilder.Entity("LabelObjective")
             .HasData(labelObjectives.ToArray());
 
         #endregion
+        
+        base.OnModelCreating(modelBuilder);
     }
     
     public class ObjectiveConfiguration : IEntityTypeConfiguration<Objective>

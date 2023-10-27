@@ -6,13 +6,13 @@ namespace WebApp.Models
     public class Action
     {
         [Key]
-        public Guid ActionId { get; set; }
+        public Guid Id { get; set; }
         
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
         public User User { get; set; }
         
         public DateTime DateTime { get; set; }
         [Required]
-        public string ActionDescription { get; set; }
+        public string Description { get; set; }
     }
 }

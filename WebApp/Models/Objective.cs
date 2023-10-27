@@ -7,9 +7,9 @@ namespace WebApp.Models
     public class Objective
     {
         [Key]
-        public Guid ObjectiveId { get; set; }
+        public Guid Id { get; set; }
         
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
         public User User  { get; set; }
         
         public Guid GroupId { get; set; }

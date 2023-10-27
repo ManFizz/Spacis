@@ -5,13 +5,13 @@ namespace WebApp.Models
     public class Label
     {
         [Key]
-        public Guid LabelId { get; set; }
+        public Guid Id { get; set; }
         
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
         public User User  { get; set; }
         
         [Required]
-        public string LabelName { get; set; }
+        public string Name { get; set; }
         
         public List<Objective> Objectives { get; set; } = new();
     }
