@@ -1,9 +1,10 @@
 ﻿@functions{
-    public string NavManage(string controller)
+    private string NavManage(string controller)
     {
         return ViewContext.RouteData.Values["Controller"]!.ToString() == controller ? "active" : "text-white";
     }
 }
+
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="dark">
 <head>
@@ -52,49 +53,32 @@
             <span class="fs-4">Spacis</span>
         </a>
         <hr>
+        @{
+            var navigationItems = new[]
+            {
+                new { Controller = "Objective", Action = "DisplayList", Icon = "list-task", Text = "Tasks", RequireRole = "User" },
+                new { Controller = "User", Action = "DisplayList", Icon = "peoples", Text = "Users", RequireRole = "Admin" },
+                new { Controller = "Group", Action = "DisplayList", Icon = "collection", Text = "Groups", RequireRole = "User" },
+                new { Controller = "Label", Action = "DisplayList", Icon = "tags", Text = "Labels", RequireRole = "User" },
+                new { Controller = "Status", Action = "DisplayList", Icon = "checks-grid", Text = "Statuses", RequireRole = "User" },
+                new { Controller = "Action", Action = "DisplayList", Icon = "list-columns", Text = "Actions", RequireRole = "Admin" },
+                new { Controller = "Role", Action = "DisplayList", Icon = "person-video", Text = "Roles", RequireRole = "Admin" }
+            };
+        }
+        
         <ul class="nav nav-pills flex-column mb-auto">
-            <li class="nav-item">
-                <a class="nav-link @(NavManage("Objective"))" asp-controller="Objective" asp-action="DisplayList">
-                    <svg class="bi pe-none me-2" width="20" height="20"><use xlink:href="#list-task" /></svg>
-                    Tasks
-                </a>
-            </li>
-            <li>
-                <a class="nav-link @(NavManage("User"))" asp-controller="User" asp-action="DisplayList">
-                    <svg class="bi pe-none me-2" width="20" height="20"><use xlink:href="#peoples" /></svg>
-                    Users
-                </a>
-            </li>
-            <li>
-                <a class="nav-link @(NavManage("Group"))" asp-controller="Group" asp-action="DisplayList">
-                    <svg class="bi pe-none me-2" width="20" height="20"><use xlink:href="#collection" /></svg>
-                    Groups
-                </a>
-            </li>
-            <li>
-                <a class="nav-link @(NavManage("Label"))" asp-controller="Label" asp-action="DisplayList">
-                    <svg class="bi pe-none me-2" width="20" height="20"><use xlink:href="#tags" /></svg>
-                    Labels
-                </a>
-            </li>
-            <li>
-                <a class="nav-link @(NavManage("Status"))" asp-controller="Status" asp-action="DisplayList">
-                    <svg class="bi pe-none me-2" width="20" height="20"><use xlink:href="#checks-grid" /></svg>
-                    Statuses
-                </a>
-            </li>
-            <li>
-                <a class="nav-link @(NavManage("Action"))" asp-controller="Action" asp-action="DisplayList">
-                    <svg class="bi pe-none me-2" width="20" height="20"><use xlink:href="#list-columns" /></svg>
-                    Actions
-                </a>
-            </li>
-            <li>
-                <a class="nav-link @(NavManage("Role"))" asp-controller="Role" asp-action="DisplayList">
-                    <svg class="bi pe-none me-2" width="20" height="20"><use xlink:href="#person-video" /></svg>
-                    Roles
-                </a>
-            </li>
+            @foreach (var navItem in navigationItems)
+            {
+                if (!User.IsInRole(navItem.RequireRole))
+                    continue;
+                
+                <li class="nav-item">
+                    <a class="nav-link @NavManage(navItem.Text)" asp-controller="@navItem.Controller" asp-action="@navItem.Action">
+                        <svg class="bi pe-none me-2" width="20" height="20"><use xlink:href="#@navItem.Icon" /></svg>
+                        @navItem.Text
+                    </a>
+                </li>
+            }
         </ul>
         <hr>
         <div class="d-flex">

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.EntityFrameworkCore;
@@ -5,6 +6,7 @@ using WebApp.Models;
 
 namespace WebApp.Controllers;
 
+[Authorize]
 public class ObjectiveController(ApplicationContext db) : MainController(db)
 {
     

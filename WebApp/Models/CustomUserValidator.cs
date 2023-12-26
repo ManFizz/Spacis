@@ -43,7 +43,8 @@ namespace WebApp.Models
             }
 
             var forbiddenWords = new List<string> { "admin", "superuser", "root" };
-            if (forbiddenWords.Any(word => user.UserName.Contains(word, StringComparison.OrdinalIgnoreCase)))
+            if (forbiddenWords.Any(word => user.UserName.Contains(word, StringComparison.OrdinalIgnoreCase)) 
+                && !user.UserName.Equals(Constants.AdministratorsRole))
             {
                 errors.Add(new IdentityError
                 {

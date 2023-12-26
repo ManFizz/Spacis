@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using WebApp.Models;
@@ -5,6 +6,7 @@ using WebApp.ViewModels;
 
 namespace WebApp.Controllers;
 
+[Authorize(Roles=Constants.AdministratorsRole)]
 public class UserController(UserManager<User> userManager, ApplicationContext db) : MainController(db)
 {
     public IActionResult DisplayList()

@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,88 +29,6 @@ public sealed class ApplicationContext : IdentityDbContext<User>
     {
         modelBuilder.ApplyConfiguration(new ObjectiveConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());
-
-        #region TestData
-        
-        var admin = new User()
-        {
-            Id = Guid.NewGuid().ToString(),
-            UserName = "admin",
-            PasswordHash = "admin",
-        };
-        modelBuilder.Entity<User>().HasData(admin);
-        
-        var study = new Group()
-        {
-            Id = Guid.NewGuid(),
-            UserId = admin.Id,
-            Name = "Study",
-            Priority = 7
-        };
-        modelBuilder.Entity<Group>().HasData(study);
-        
-        var inProgress = new Status()
-        {
-            Id = Guid.NewGuid(),
-            Name = "In progress"
-        };
-        modelBuilder.Entity<Status>().HasData(inProgress);
-        
-        var spacis = new Objective()
-        {
-            Id = Guid.NewGuid(),
-            UserId = admin.Id,
-            GroupId = study.Id,
-            Title = "Spacis project",
-            Description = "Create website on c# using ASP.NET and Entity Framework",
-            DueDate = new DateTime(2024, 1, 14),
-            StatusId = inProgress.Id,
-            Priority = 99,
-        };
-        modelBuilder.Entity<Objective>().HasData(spacis);
-        
-        
-        var spacisTest = new Objective()
-        {
-            Id = Guid.NewGuid(),
-            UserId = admin.Id,
-            GroupId = study.Id,
-            Title = "Spacis test",
-            Description = "Test website for search bugs",
-            DueDate = new DateTime(2024, 2, 28),
-            StatusId = inProgress.Id,
-            Priority = 100,
-        };
-        modelBuilder.Entity<Objective>().HasData(spacisTest);
-        
-        var labels = new List<Label>
-        {
-            new()
-            {
-                Id = Guid.NewGuid(),
-                UserId = admin.Id,
-                Name = "Learn",
-            },
-            new()
-            {
-                Id = Guid.NewGuid(),
-                UserId = admin.Id,
-                Name = "Deadline",
-            }
-        };
-        modelBuilder.Entity<Label>().HasData(labels);
-        
-        // Записи для связи между Objective и Label
-        var labelObjectives = labels.Select(label => new
-        {
-            LabelsId = label.Id,
-            ObjectivesId = spacis.Id
-        });
-
-        modelBuilder.Entity("LabelObjective")
-            .HasData(labelObjectives.ToArray());
-
-        #endregion
         
         base.OnModelCreating(modelBuilder);
     }

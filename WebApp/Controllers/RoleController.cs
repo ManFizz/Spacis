@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WebApp.Models;
@@ -5,6 +6,8 @@ using WebApp.ViewModels;
 
 namespace WebApp.Controllers;
 
+
+[Authorize(Roles=Constants.AdministratorsRole)]
 public class RoleController(ApplicationContext db, RoleManager<IdentityRole> roleManager, UserManager<User> userManager) : MainController(db)
 {
         public IActionResult DisplayList() => View(roleManager.Roles.ToList());
