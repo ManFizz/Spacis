@@ -1,20 +1,26 @@
 @model IEnumerable<WebApp.Models.Action>
-
+@{
+    ViewBag.Title = "Список действий";
+}
 
 <h2>Список действий</h2>
 @* <p><a asp-action="CreateAction">Добавить действие</a></p> *@
 <table class="table">
     <tr>
-        <th>Пользователь</th>
+        <th>Содержимое</th>
+        <th>Тип</th>
         <th>Дата</th>
-        <th>действие</th>
+        <th>Задача</th>
+        <th>Пользователь</th>
     </tr>
     @foreach (var a in Model)
     {
         <tr>
-            <td>@a.User.Login</td>
+            <td>@a.Info</td>
+            <td>@a.Type</td>
             <td>@a.DateTime</td>
-            <td>@a.ActionDescription</td>
+            <td>@a.Objective.Title</td>
+            <td>@a.Member.Name</td>
         </tr>
     }
 </table>

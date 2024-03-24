@@ -1,15 +1,17 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WebApp.Models;
+using WebApp.SomeModels;
 
 namespace WebApp.Controllers;
 
-public class ActionController(ApplicationContext db) : MainController(db)
+[Authorize(Roles=Constants.AdministratorsRole)]
+public class ActionController(ApplicationContext db) : Controller
 {
     public Task<IActionResult> DisplayList()
     {
-        ViewData["Title"] = "Actions";
         return Task.FromResult<IActionResult>(View(db.Actions
-            .Include(a => a.User)));
+            .Include(a => a.Objective)
+            .Include(a => a.Member)));
     }
 }

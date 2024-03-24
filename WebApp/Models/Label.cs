@@ -5,14 +5,19 @@ namespace WebApp.Models
     public class Label
     {
         [Key]
-        public Guid LabelId { get; set; }
-        
-        public Guid UserId { get; set; }
-        public User User  { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
         
         [Required]
-        public string LabelName { get; set; }
+        [StringLength(255)]
+        public string Title { get; set; } = string.Empty;
         
-        public List<Objective> Objectives { get; set; } = new();
+        [StringLength(32)]
+        public string Color { get; set; } = string.Empty;
+        
+    
+        public Guid ProjectId { get; set; }
+        public Project Project  { get; set; } = null!;
+        
+        public List<Objective> Objectives { get; } = [];
     }
 }

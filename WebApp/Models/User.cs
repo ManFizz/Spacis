@@ -1,26 +1,25 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
 
 namespace WebApp.Models
 {
-    public class User
+    public class User : IdentityUser
     {
-        [Key]
-        public Guid UserId { get; set; } = Guid.NewGuid();
-        
         [Required]
-        [StringLength(24, MinimumLength = 6)]
-        public string Login { get; set; }
-        
-        [Required]
-        [StringLength(24, MinimumLength = 6)]
-        [Display(Name = "Password")]
-        public string PasswordHash  { get; set; }
+        [StringLength(255)]
+        public string Name { get; set; } = string.Empty;
 
-        public List<Label> Labels { get; } = new();
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
+        [DataType(DataType.Date)]
+        public DateTime DateJoin { get; set; } = DateTime.Now;
         
-        public List<Action> Actions { get; } = new();
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
+        [DataType(DataType.Date)]
+        public DateTime DateOfBirth { get; set; }
         
-        public List<Group> Groups { get; } = new();
+        public List<Member> Members { get; } = [];
+        
+        public Guid? SelectedProjectId { get; set; }
+        public Project? SelectedProject { get; set; }
     }
 }

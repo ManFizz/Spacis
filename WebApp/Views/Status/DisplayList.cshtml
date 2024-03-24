@@ -1,17 +1,21 @@
 @model IEnumerable<WebApp.Models.Status>
-
+@{
+    ViewBag.Title = "Список статусов";
+}
 
 <h2>Список статусов</h2>
 <p><a asp-action="CreateStatus">Добавить статус</a></p>
 <table class="table">
     <tr>
         <th>Статус</th>
+        <th>Цвет</th>
         <th>Кол-во задач</th>
     </tr>
     @foreach (var s in Model)
     {
         <tr>
-            <td>@s.StatusName</td>
+            <td>@s.Title</td>
+            <td>@s.Color</td>
             <td>@s.Objectives.Count</td>
         </tr>
     }

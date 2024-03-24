@@ -1,24 +1,47 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WebApp.Models;
+using WebApp.SomeModels;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// получаем строку подключения из файла конфигурации
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
  
-// добавляем контекст ApplicationContext в качестве сервиса в приложение
 builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlite(connection));
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
 
-var app = builder.Build();
+builder.Services.AddTransient<IPasswordValidator<User>,
+    CustomPasswordValidator>(_ => new CustomPasswordValidator(6));
+builder.Services.AddTransient<IUserValidator<User>, CustomUserValidator>();
 
-// Configure the HTTP request pipeline.
+builder.Services.AddIdentity<User, IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationContext>()
+    .AddDefaultTokenProviders();
+
+builder.Services.AddScoped<UserManager<User>>();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("RequireAnonymousAccess", policy =>
+    {
+        policy.RequireAssertion(context => !context.User.Identity!.IsAuthenticated);
+    });
+});
+
+var app = builder.Build();
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<ApplicationContext>();
+    context.Database.Migrate();
+
+    var testUserPw = builder.Configuration.GetValue<string>("SeedUserPW");
+    await SeedData.Initialize(services, testUserPw!);
+}
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -27,6 +50,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
