@@ -1,31 +1,37 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.Text.RegularExpressions;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace WebApp.Models
 {
     public class Objective
     {
         [Key]
-        public Guid Id { get; set; }
-        
-        public string UserId { get; set; }
-        public User User  { get; set; }
-        
-        public Guid GroupId { get; set; }
-        public Group Group  { get; set; }
+        public Guid Id { get; init; } = Guid.NewGuid();
         
         [Required]
-        public string Title { get; set; }
+        [StringLength(256)]
+        public string Title { get; set; } = string.Empty;
         
-        public string Description { get; set; }
-        public DateTime DueDate { get; set; }
+        [StringLength(256)]
+        public string Description { get; set; } = string.Empty;
         
-        public Guid StatusId { get; set; }
-        public Status Status  { get; set; }
+        [Required]
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy HH:mm}", ApplyFormatInEditMode = true)]
+        [DataType(DataType.DateTime)]
+        public DateTime DueDateTime { get; set; }
         
         public int Priority { get; set; }
         
-        public List<Label> Labels { get; set; } = new();
+        public Guid ProjectId { get; set; }
+        public Project Project { get; set; } = null!;
+        
+        public Guid StatusId { get; set; }
+        public Status Status  { get; set; } = null!;
+        
+        public Guid AuthorId { get; init; }
+        public User Author { get; init; } = null!;
+        
+        public List<Label> Labels { get; } = [];
+        
+        public List<Member> Members { get; } = [];
     }
 }

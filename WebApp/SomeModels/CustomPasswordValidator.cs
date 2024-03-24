@@ -1,10 +1,8 @@
-using System;
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
- 
-namespace WebApp.Models
+using WebApp.Models;
+
+namespace WebApp.SomeModels
 {
     public class CustomPasswordValidator(int length) : IPasswordValidator<User>
     {

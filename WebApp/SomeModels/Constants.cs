@@ -1,4 +1,4 @@
-namespace WebApp.Models;
+namespace WebApp.SomeModels;
 
 public static class Constants
 {

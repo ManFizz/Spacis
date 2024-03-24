@@ -1,80 +1,78 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebApp.Models;
-using WebApp.ViewModels;
+using WebApp.SomeModels;
 
 namespace WebApp.Controllers;
 
 
 [Authorize(Roles=Constants.AdministratorsRole)]
-public class RoleController(ApplicationContext db, RoleManager<IdentityRole> roleManager, UserManager<User> userManager) : MainController(db)
+public class RoleController(UserManager<User> userManager, ApplicationContext db) : Controller
 {
-        public IActionResult DisplayList() => View(roleManager.Roles.ToList());
- 
-        public IActionResult Create() => View();
-        [HttpPost]
-        public async Task<IActionResult> Create(string name)
-        {
-            if (string.IsNullOrEmpty(name))
-                return View(name);
-            
-            var result = await roleManager.CreateAsync(new IdentityRole(name));
-            if (result.Succeeded)
-                return RedirectToAction("DisplayList");
+    private async Task<User?> CheckUser()
+    {
+        var currentUser = await userManager.GetUserAsync(User);
+        if (currentUser == null) 
+            return null;
+        
+        currentUser = await userManager.Users
+            .Include(u => u.SelectedProject)
+            .SingleOrDefaultAsync(u => u.Id == currentUser.Id);
+        if (currentUser!.SelectedProject == null)
+            return null;
 
-            foreach (var error in result.Errors)
-                ModelState.AddModelError(string.Empty, error.Description);
-            
-            return View(name);
-        }
-         
-        [HttpPost]
-        public async Task<IActionResult> Delete(string id)
+        return currentUser;
+    }
+    
+    public async Task<IActionResult> DisplayList()
+    {
+        var currentUser = await CheckUser();
+        if (currentUser == null)
+            return RedirectToAction("DisplayList", "Project");
+        
+        return View(await db.Roles
+                .Include(r => r.Project)
+                .Include(r => r.Permissions)
+                .Where(r => r.ProjectId == currentUser.SelectedProjectId)
+                .ToListAsync());
+    }
+
+    public async Task<IActionResult> CreateRole()
+    {
+        var currentUser = await CheckUser();
+        if (currentUser == null)
+            return RedirectToAction("DisplayList", "Project");
+
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateRole(Role role)
+    {
+        if (!ModelState.IsValid)
         {
-            var role = await roleManager.FindByIdAsync(id);
-            if (role != null)
+            foreach (var error in ModelState.Values)
             {
-                var result = await roleManager.DeleteAsync(role);
+                foreach (var errorError in error.Errors)
+                {
+                    Console.WriteLine(errorError.ErrorMessage);
+                }
+
             }
-            return RedirectToAction("DisplayList");
-        }
- 
-        public IActionResult UserList() => View(userManager.Users.ToList());
- 
-        public async Task<IActionResult> Edit(string userId)
-        {
-            var user = await userManager.FindByIdAsync(userId);
-            if (user == null)
-                return NotFound();
-            
-            var userRoles = await userManager.GetRolesAsync(user);
-            var allRoles = roleManager.Roles.ToList();
-            var model = new ChangeRoleViewModel
-            {
-                UserId = user.Id,
-                UserEmail = user.Email!,
-                UserRoles = userRoles,
-                AllRoles = allRoles
-            };
-            return View(model);
 
+            return View(role);
         }
-        [HttpPost]
-        public async Task<IActionResult> Edit(string userId, List<string> roles)
-        {
-            var user = await userManager.FindByIdAsync(userId);
-            if (user == null)
-                return NotFound();
-            
-            var userRoles = await userManager.GetRolesAsync(user);
-            var addedRoles = roles.Except(userRoles);
-            var removedRoles = userRoles.Except(roles);
-            
-            await userManager.AddToRolesAsync(user, addedRoles);
-            await userManager.RemoveFromRolesAsync(user, removedRoles);
- 
-            return RedirectToAction("UserList");
 
-        }
+        var currentUser = await CheckUser();
+        if (currentUser == null)
+            return RedirectToAction("DisplayList", "Project");
+        
+        role.ProjectId = currentUser.SelectedProject!.Id;
+        currentUser.SelectedProject!.Roles.Add(role);
+        await db.SaveChangesAsync();
+        return RedirectToAction("DisplayList");
+    }
 }

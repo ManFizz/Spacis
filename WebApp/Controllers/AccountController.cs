@@ -2,11 +2,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WebApp.Models;
+using WebApp.SomeModels;
 using WebApp.ViewModels;
 
 namespace WebApp.Controllers;
 
-public class AccountController(ApplicationContext db, UserManager<User> userManager, SignInManager<User> signInManager) : MainController(db)
+public class AccountController(ApplicationContext db, UserManager<User> userManager, SignInManager<User> signInManager) : Controller
 {
     [Authorize(Policy = "RequireAnonymousAccess")]
     public IActionResult Register()

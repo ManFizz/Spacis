@@ -1,7 +1,8 @@
-using Microsoft.AspNetCore.Identity;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Identity;
+using WebApp.Models;
 
-namespace WebApp.Models
+namespace WebApp.SomeModels
 {
     public class CustomUserValidator : UserValidator<User>
     {

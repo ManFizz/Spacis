@@ -1,12 +1,12 @@
-@model WebApp.Models.Status
+@model WebApp.Models.Label
 @{
-    ViewBag.Title = "Добавление статуса";
+    ViewBag.Title = "Добавление метки";
 }
 
-<h2>Добавление статуса</h2>
-<form asp-action="CreateStatus" asp-controller="Status">
+<h2>Добавление метки</h2>
+<form asp-action="CreateLabel" asp-controller="Label">
     <p>
-        <label asp-for="Title">Назвавние </label><br />
+        <label asp-for="Title">Назвавние</label><br />
         <input type="text" asp-for="Title" />
     </p>
     <p>

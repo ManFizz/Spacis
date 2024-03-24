@@ -8,12 +8,14 @@
 <table class="table">
     <tr>
         <th>Статус</th>
+        <th>Цвет</th>
         <th>Кол-во задач</th>
     </tr>
     @foreach (var s in Model)
     {
         <tr>
-            <td>@s.Name</td>
+            <td>@s.Title</td>
+            <td>@s.Color</td>
             <td>@s.Objectives.Count</td>
         </tr>
     }

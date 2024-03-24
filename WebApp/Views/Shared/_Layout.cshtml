@@ -1,8 +1,14 @@
-﻿@functions{
+﻿@using Microsoft.AspNetCore.Identity
+@inject UserManager<User> UserManager
+
+@functions{
     private string NavManage(string controller)
     {
         return ViewContext.RouteData.Values["Controller"]!.ToString() == controller ? "active" : "text-white";
     }
+}
+@{
+    var currentUser = await UserManager.GetUserAsync(User);
 }
 
 <!DOCTYPE html>
@@ -50,7 +56,16 @@
     <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" style="width: 280px; height: 100%;">
         <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
             <svg class="bi pe-none me-2" width="24" height="24"><use xlink:href="#calendar-check" /></svg>
-            <span class="fs-4">Spacis</span>
+            <span class="fs-4">
+                @if (currentUser?.SelectedProject == null)
+                {
+                    @:To/do
+                }
+                else
+                {
+                    @currentUser.SelectedProject.Title
+                }
+            </span>
         </a>
         <hr>
         @{
@@ -58,7 +73,8 @@
             {
                 new { Controller = "Objective", Action = "DisplayList", Icon = "list-task", Text = "Tasks", RequireRole = "User" },
                 new { Controller = "User", Action = "DisplayList", Icon = "peoples", Text = "Users", RequireRole = "Admin" },
-                new { Controller = "Group", Action = "DisplayList", Icon = "collection", Text = "Groups", RequireRole = "User" },
+                new { Controller = "Member", Action = "DisplayList", Icon = "peoples", Text = "Members", RequireRole = "User" },
+                new { Controller = "Project", Action = "DisplayList", Icon = "collection", Text = "Projects", RequireRole = "User" },
                 new { Controller = "Label", Action = "DisplayList", Icon = "tags", Text = "Labels", RequireRole = "User" },
                 new { Controller = "Status", Action = "DisplayList", Icon = "checks-grid", Text = "Statuses", RequireRole = "User" },
                 new { Controller = "Action", Action = "DisplayList", Icon = "list-columns", Text = "Actions", RequireRole = "Admin" },
@@ -104,11 +120,6 @@
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
-        @* <footer class="border-top footer text-muted">
-            <div class="container-fluid text-end">
-                &copy;@DateTime.Now.Year - <a href="https://github.com/ManFizz/Spacis">Spacis</a> 
-            </div>
-        </footer> *@
     </div>
 </div>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>

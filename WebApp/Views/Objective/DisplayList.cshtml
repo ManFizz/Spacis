@@ -9,18 +9,28 @@
     <div class="col">
         <table class="table table-hover">
             <tr>
-                <th>Статус</th>
-                <th>Задача</th>
-                <th>Метки</th>
+                <th>Название</th>
+                <th>Описание</th>
                 <th>Поставленная дата</th>
+                <th>Приоритет</th>
+                <th>Проект</th>
+                <th>Статус</th>
+                <th>Автор</th>
+                <th>Метки</th>
+                <th>Участники</th>
             </tr>
             @foreach (var o in Model)
             {
                 <tr data-taskid="@o.Id" class="task-row">
-                    <td>@o.Status.Name</td>
                     <td>@o.Title</td>
-                    <td>@string.Join(", ", o.Labels.Select(l => l.Name))</td>
-                    <td class="date-moment">@o.DueDate</td>
+                    <td>@o.Description</td>
+                    <td>@o.DueDateTime</td>
+                    <td>@o.Priority</td>
+                    <td>@o.Project.Title</td>
+                    <td>@o.Status.Title</td>
+                    <td>@o.Author.Name</td>
+                    <td>@string.Join(", ", o.Labels.Select(l => l.Title))</td>
+                    <td>@string.Join(", ", o.Members.Select(m => m.Name))</td>
                 </tr>
             }
         </table>

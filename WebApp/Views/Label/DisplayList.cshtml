@@ -7,15 +7,15 @@
 @* <p><a asp-action="CreateLabel">Добавить метку</a></p> *@
 <table class="table">
     <tr>
-        <th>Пользователь</th>
-        <th>Метка</th>
+        <th>Название</th>
+        <th>Цвет</th>
         <th>Кол-во задач</th>
     </tr>
     @foreach (var l in Model)
     {
         <tr>
-            <td>@l.User.UserName</td>
-            <td>@l.Name</td>
+            <td>@l.Title</td>
+            <td>@l.Color</td>
             <td>@l.Objectives.Count</td>
         </tr>
     }

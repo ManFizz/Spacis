@@ -1,17 +1,20 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using WebApp.Models;
+using WebApp.SomeModels;
 using WebApp.ViewModels;
 
 namespace WebApp.Controllers;
 
 [Authorize(Roles=Constants.AdministratorsRole)]
-public class UserController(UserManager<User> userManager, ApplicationContext db) : MainController(db)
+public class UserController(UserManager<User> userManager, ApplicationContext db) : Controller
 {
-    public IActionResult DisplayList()
+    public Task<IActionResult> DisplayList()
     {
-        return View(userManager.Users.ToList());
+        return Task.FromResult<IActionResult>(View(userManager.Users
+            .Include(u => u.Members)));
     }
 
     public IActionResult Create()
