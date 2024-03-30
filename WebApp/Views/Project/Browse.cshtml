@@ -1,0 +1,34 @@
+@model IEnumerable<WebApp.Models.Project>
+@{
+    ViewBag.Title = "Список проектов";
+}
+
+<h2>Список проектов</h2>
+<p><a asp-action="Create">Создать проект</a></p>
+<p><a asp-action="Select">Выбрать проект</a></p>
+<table class="table">
+    <tr>
+        <th>Название</th>
+        <th>Создан</th>
+        <th>Кол-во участников</th>
+        <th></th>
+        <th>Кол-во задач</th>
+        <th>Кол-во ролей</th>
+    </tr>
+    @foreach (var project in Model)
+    {
+        <tr>
+            <td>@project.Title</td>
+            <td>@project.DateCreated</td>
+            <td>@project.Members.Count</td>
+            <td>
+               <form asp-action="Browse" asp-controller="Member" method="get">
+                   <input type="hidden" name="projectId" value="@project.Id" />
+                   <button type="submit">Участники</button>
+               </form>
+            </td>
+            <td>@project.Objectives.Count</td>
+            <td>@project.Roles.Count</td>
+        </tr>
+    }
+</table>

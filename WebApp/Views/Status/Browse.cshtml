@@ -1,0 +1,37 @@
+@model IEnumerable<WebApp.Models.Status>
+@{
+    ViewBag.Title = "Список статусов";
+}
+
+<h2>@ViewBag.Title</h2>
+<p><a asp-action="Create">Добавить статус</a></p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Статус</th>
+            <th>Цвет</th>
+            <th>Кол-во задач</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var s in Model)
+    {
+        <tr>
+            <td>@s.Title</td>
+            <td>@s.Color</td>
+            <td>@s.Objectives.Count</td>
+            <td>
+                <div class="d-flex">
+                    <form method="get" asp-action="Edit" asp-route-id="@s.Id">
+                        <button type="submit" class="btn btn-primary">Изменить</button>
+                    </form>
+                    <form method="post" asp-action="Delete" asp-route-id="@s.Id">
+                        <button type="submit" class="btn btn-danger">Удалить</button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

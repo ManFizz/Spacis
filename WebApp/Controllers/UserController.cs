@@ -1,20 +1,22 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WebApp.Models;
-using WebApp.SomeModels;
+using WebApp.HelperModels;
 using WebApp.ViewModels;
+using WebApp.ViewModels.User;
 
 namespace WebApp.Controllers;
 
-[Authorize(Roles=Constants.AdministratorsRole)]
 public class UserController(UserManager<User> userManager, ApplicationContext db) : Controller
 {
-    public Task<IActionResult> DisplayList()
+    public async Task<IActionResult> Browse()
     {
-        return Task.FromResult<IActionResult>(View(userManager.Users
-            .Include(u => u.Members)));
+        var users = await userManager.Users
+            .Include(u => u.Members)
+            .ToListAsync();
+        
+        return View(users);
     }
 
     public IActionResult Create()
@@ -31,7 +33,7 @@ public class UserController(UserManager<User> userManager, ApplicationContext db
         var user = new User { Email = model.Email, UserName = model.Login, DateOfBirth = model.DateOfBirth };
         var result = await userManager.CreateAsync(user, model.Password);
         if (result.Succeeded)
-            return RedirectToAction("DisplayList");
+            return RedirectToAction("Browse");
 
         foreach (var error in result.Errors) 
             ModelState.AddModelError(string.Empty, error.Description);
@@ -65,7 +67,7 @@ public class UserController(UserManager<User> userManager, ApplicationContext db
                  
         var result = await userManager.UpdateAsync(user);
         if (result.Succeeded)
-            return RedirectToAction("DisplayList");
+            return RedirectToAction("Browse");
         
         foreach (var error in result.Errors) ModelState.AddModelError(string.Empty, error.Description);
         return View(model);
@@ -79,7 +81,7 @@ public class UserController(UserManager<User> userManager, ApplicationContext db
         {
             var result = await userManager.DeleteAsync(user);
         }
-        return RedirectToAction("DisplayList");
+        return RedirectToAction("Browse");
     }
     
     public async Task<IActionResult> ChangePassword(string id)
@@ -108,7 +110,7 @@ public class UserController(UserManager<User> userManager, ApplicationContext db
         var result =
             await userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
         if (result.Succeeded)
-            return RedirectToAction("DisplayList");
+            return RedirectToAction("Browse");
 
         foreach (var error in result.Errors)
             ModelState.AddModelError(string.Empty, error.Description);

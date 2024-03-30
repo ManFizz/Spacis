@@ -1,17 +1,19 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WebApp.Models;
-using WebApp.SomeModels;
-using WebApp.ViewModels;
+using WebApp.HelperModels;
+using WebApp.ViewModels.Account;
 
 namespace WebApp.Controllers;
 
-public class AccountController(ApplicationContext db, UserManager<User> userManager, SignInManager<User> signInManager) : Controller
+public class AccountController(UserManager<User> userManager, SignInManager<User> signInManager) : Controller
 {
-    [Authorize(Policy = "RequireAnonymousAccess")]
-    public IActionResult Register()
+    public async Task<IActionResult> Register()
     {
+        var currentUser = await userManager.GetUserAsync(User);
+        if(currentUser != null)
+            return RedirectToAction("Browse", "Objective");
+        
         return View();
     }
     [HttpPost]
@@ -26,7 +28,7 @@ public class AccountController(ApplicationContext db, UserManager<User> userMana
         {
             await userManager.AddToRoleAsync(user, Constants.UsersRole);
             await signInManager.SignInAsync(user, false);
-            return RedirectToAction("Index", "Index");
+            return RedirectToAction("Select", "Project");
         }
 
         foreach (var error in result.Errors)
@@ -35,9 +37,12 @@ public class AccountController(ApplicationContext db, UserManager<User> userMana
         return View(model);
     }
     
-    [Authorize(Policy = "RequireAnonymousAccess")]
-    public IActionResult Login(string returnUrl = "")
+    public async Task<IActionResult> Login(string returnUrl = "")
     {
+        var currentUser = await userManager.GetUserAsync(User);
+        if(currentUser != null)
+            return RedirectToAction("Browse", "Objective");
+
         return View(new LoginViewModel { ReturnUrl = returnUrl });
     }
  
@@ -55,7 +60,7 @@ public class AccountController(ApplicationContext db, UserManager<User> userMana
             if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
                 return Redirect(model.ReturnUrl);
                 
-            return RedirectToAction("Index", "Index");
+            return RedirectToAction("Browse", "Objective");
         }
 
         ModelState.AddModelError("", "Неправильный логин и (или) пароль");
@@ -67,6 +72,6 @@ public class AccountController(ApplicationContext db, UserManager<User> userMana
     public async Task<IActionResult> Logout()
     {
         await signInManager.SignOutAsync();
-        return RedirectToAction("Index", "Index");
+        return RedirectToAction("Login");
     }
 }

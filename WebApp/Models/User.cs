@@ -5,10 +5,6 @@ namespace WebApp.Models
 {
     public class User : IdentityUser
     {
-        [Required]
-        [StringLength(255)]
-        public string Name { get; set; } = string.Empty;
-
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         [DataType(DataType.Date)]
         public DateTime DateJoin { get; set; } = DateTime.Now;
@@ -21,5 +17,9 @@ namespace WebApp.Models
         
         public Guid? SelectedProjectId { get; set; }
         public Project? SelectedProject { get; set; }
+        
+        
+        public Guid? SelectedMemberId { get; set; }
+        public Member? SelectedMember { get; set; }
     }
 }

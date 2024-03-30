@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using WebApp.HelperModels;
 
 namespace WebApp.Models
 {
@@ -11,10 +12,8 @@ namespace WebApp.Models
         [StringLength(255)]
         public string Title { get; set; } = string.Empty;
         
-        [StringLength(32)]
-        public string Color { get; set; } = string.Empty;
+        public Color Color { get; set; } = Color.Secondary;
         
-    
         public Guid ProjectId { get; set; }
         public Project Project  { get; set; } = null!;
         

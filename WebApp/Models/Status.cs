@@ -1,23 +1,21 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using WebApp.HelperModels;
 
-namespace WebApp.Models
+namespace WebApp.Models;
+
+public class Status
 {
-    public class Status
-    {
-        [Key]
-        public Guid Id { get; set; } = Guid.NewGuid();
+    [Key]
+    public Guid Id { get; set; } = Guid.NewGuid();
         
-        [Required]
-        [StringLength(255)]
-        public string Title { get; set; } = string.Empty;
+    [Required]
+    [StringLength(255)]
+    public string Title { get; set; } = string.Empty;
         
-        [StringLength(32)]
-        public string Color { get; set; } = string.Empty;
-        
+    public Color Color { get; set; } = Color.Secondary;
     
-        public Guid ProjectId { get; set; }
-        public Project Project  { get; set; } = null!;
+    public Guid ProjectId { get; set; }
+    public Project Project  { get; set; } = null!;
 
-        public List<Objective> Objectives { get; } = [];
-    }
+    public List<Objective> Objectives { get; } = [];
 }

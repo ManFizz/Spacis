@@ -1,17 +1,25 @@
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WebApp.SomeModels;
+using WebApp.Models;
+using WebApp.HelperModels;
 
 namespace WebApp.Controllers;
 
-[Authorize(Roles=Constants.AdministratorsRole)]
-public class ActionController(ApplicationContext db) : Controller
+public class ActionController(UserManager<User> userManager, ApplicationContext db) : BaseController(userManager, db)
 {
-    public Task<IActionResult> DisplayList()
+    public async Task<IActionResult> Browse()
     {
-        return Task.FromResult<IActionResult>(View(db.Actions
+        var redirect = await IsNeedRedirect();
+        if (redirect != null) return redirect;
+
+        var user = await CurrentUser;
+        var actions = await DbContext.Actions
             .Include(a => a.Objective)
-            .Include(a => a.Member)));
+            .Include(a => a.Member)
+            .Where(a => a.Objective.ProjectId == user!.SelectedProjectId)
+            .ToListAsync();
+        
+        return View(actions);
     }
 }

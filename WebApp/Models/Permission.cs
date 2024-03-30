@@ -7,7 +7,9 @@ public class Permission
     [Key]
     public Guid Id { get; init; } = Guid.NewGuid();
     
-    [Required]
+    [StringLength(64)]
+    public string CodeName { get; set; } = string.Empty;
+    
     [StringLength(256)]
     public string Title { get; set; } = string.Empty;
     

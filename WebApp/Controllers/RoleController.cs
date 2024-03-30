@@ -1,57 +1,52 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApp.Models;
-using WebApp.SomeModels;
+using WebApp.HelperModels;
 
 namespace WebApp.Controllers;
 
 
-[Authorize(Roles=Constants.AdministratorsRole)]
-public class RoleController(UserManager<User> userManager, ApplicationContext db) : Controller
+public class RoleController(UserManager<User> userManager, ApplicationContext db) : BaseController(userManager, db)
 {
-    private async Task<User?> CheckUser()
+    public async Task<IActionResult> Browse()
     {
-        var currentUser = await userManager.GetUserAsync(User);
-        if (currentUser == null) 
-            return null;
-        
-        currentUser = await userManager.Users
-            .Include(u => u.SelectedProject)
-            .SingleOrDefaultAsync(u => u.Id == currentUser.Id);
-        if (currentUser!.SelectedProject == null)
-            return null;
+        var redirect = await IsNeedRedirect();
+        if (redirect != null) return redirect;
 
-        return currentUser;
-    }
-    
-    public async Task<IActionResult> DisplayList()
-    {
-        var currentUser = await CheckUser();
-        if (currentUser == null)
-            return RedirectToAction("DisplayList", "Project");
+        var user = await CurrentUser;
+        var roles = await DbContext.Roles
+            .Include(r => r.Project)
+            .Include(r => r.Permissions)
+            .Where(r => r.ProjectId == user!.SelectedProjectId)
+            .ToListAsync();
         
-        return View(await db.Roles
-                .Include(r => r.Project)
-                .Include(r => r.Permissions)
-                .Where(r => r.ProjectId == currentUser.SelectedProjectId)
-                .ToListAsync());
+        return View(roles);
     }
 
-    public async Task<IActionResult> CreateRole()
+    public async Task<IActionResult> Create()
     {
-        var currentUser = await CheckUser();
-        if (currentUser == null)
-            return RedirectToAction("DisplayList", "Project");
+        var redirect = await IsNeedRedirect();
+        if (redirect != null) return redirect;
 
-        return View();
+        var user = await CurrentUser;
+        var role = new Role()
+        {
+            ProjectId = user!.SelectedProject!.Id
+        };
+        return View(role);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CreateRole(Role role)
+    public async Task<IActionResult> Create(Role role)
     {
+        var projectExists = await DbContext.Projects.AnyAsync(p => p.Id == role.ProjectId);
+        if (!projectExists)
+        {
+            ModelState.AddModelError("ProjectId", "Выбранный проект не существует.");
+        }
+        
         if (!ModelState.IsValid)
         {
             foreach (var error in ModelState.Values)
@@ -65,14 +60,9 @@ public class RoleController(UserManager<User> userManager, ApplicationContext db
 
             return View(role);
         }
-
-        var currentUser = await CheckUser();
-        if (currentUser == null)
-            return RedirectToAction("DisplayList", "Project");
         
-        role.ProjectId = currentUser.SelectedProject!.Id;
-        currentUser.SelectedProject!.Roles.Add(role);
-        await db.SaveChangesAsync();
-        return RedirectToAction("DisplayList");
+        DbContext.Roles.Add(role);
+        await DbContext.SaveChangesAsync();
+        return RedirectToAction("Browse");
     }
 }

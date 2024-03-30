@@ -1,0 +1,32 @@
+@model IEnumerable<WebApp.Models.Member>
+@{
+    ViewBag.Title = "Ваши профили";
+}
+
+<h2>@ViewBag.Title</h2>
+<table>
+    <thead>
+    <tr>
+        <th></th>
+        <th>Имя</th>
+        <th>Роль</th>
+        <th>Информация</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var member in Model)
+    {
+        <tr>
+            <td>
+                <form asp-action="Select" asp-controller="Member" method="post">
+                    <input type="hidden" name="memberId" value="@member.Id" />
+                    <button type="submit">Выбрать</button>
+                </form>
+            </td>
+            <td>@member.Name</td>
+            <td>@member.Role.Title</td>
+            <td>@member.Info</td>
+        </tr>
+    }
+    </tbody>
+</table>

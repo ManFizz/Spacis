@@ -1,40 +1,95 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApp.Models;
-using WebApp.SomeModels;
+using WebApp.HelperModels;
 
 namespace WebApp.Controllers;
 
-[Authorize]
-public class LabelController(UserManager<User> userManager, ApplicationContext db) : Controller
+public class LabelController(UserManager<User> userManager, ApplicationContext db) : BaseController(userManager, db)
 {
-    public async Task<IActionResult> DisplayList()
+    public async Task<IActionResult> Browse([FromRoute] Guid? projectId)
     {
-        var currentUser = await userManager.GetUserAsync(User);
-        if(currentUser == null)
-            return RedirectToAction("Login", "Account");
+        var redirect = await IsNeedRedirect();
+        if (redirect != null) return redirect;
         
-        currentUser = await userManager.Users
-            .Include(u => u.SelectedProject)
-            .SingleOrDefaultAsync(u => u.Id == currentUser.Id);
-        if(currentUser!.SelectedProject == null)
-            return RedirectToAction("DisplayList", "Project");
+        var user = await CurrentUser;
+        projectId ??= user!.SelectedProjectId;
         
-        return View(await db.Labels
+        var labels = await DbContext.Labels
             .Include(l => l.Objectives)
-            .ToListAsync());
+            .Where(l => l.ProjectId == (Guid)projectId!)
+            .ToListAsync();
+        
+        return View(labels);
+    }
+    
+    public async Task<IActionResult> Create([FromRoute] Guid? projectId)
+    {
+        var redirect = await IsNeedRedirect(CheckState.Project);
+        if (redirect != null) return redirect;
+        
+        var user = await CurrentUser;
+        projectId ??= user!.SelectedProjectId;
+        
+        var model = new Label()
+        {
+            ProjectId = (Guid)projectId!
+        };
+        return View(model);
     }
     
     [HttpPost]
-    public async Task<IActionResult> CreateLabel(Label label)
+    public async Task<IActionResult> Create(Label label)
     {
+        ModelState.Remove("Project");
         if (!ModelState.IsValid) 
             return View(label);
         
-        db.Labels.Add(label);
+        DbContext.Labels.Add(label);
+        await DbContext.SaveChangesAsync();
+        return RedirectToAction(nameof(Browse));
+    }
+    
+    public async Task<IActionResult> Edit([FromRoute] Guid id)
+    {
+        var redirect = await IsNeedRedirect(CheckState.Project);
+        if (redirect != null) return redirect;
+        
+        var label = await db.Labels.FindAsync(id);
+        if (label == null)
+            return NotFound();
+        
+        return View(label);
+    }
+    
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(Label label)
+    {
+        var redirect = await IsNeedRedirect(CheckState.Project);
+        if (redirect != null) return redirect;
+        
+        ModelState.Remove("Project");
+        if (!ModelState.IsValid)
+            return View(label);
+        
+        db.Update(label);
         await db.SaveChangesAsync();
-        return RedirectToAction("DisplayList");
+        
+        return RedirectToAction(nameof(Browse));
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> Delete([FromRoute] Guid id)
+    {
+        var label = await db.Labels.FindAsync(id);
+        if (label == null)
+            return RedirectToAction(nameof(Browse));
+    
+        db.Labels.Remove(label);
+        await db.SaveChangesAsync();
+    
+        return RedirectToAction(nameof(Browse));
     }
 }

@@ -12,8 +12,9 @@ public class Member
 
     [StringLength(255)] 
     public string Info { get; set; } = string.Empty;
-    
-    public Guid UserId { get; set; }
+
+    [StringLength(255)] 
+    public string UserId { get; set; } = null!;
     public User User  { get; set; } = null!;
     
     public Guid ProjectId { get; set; }

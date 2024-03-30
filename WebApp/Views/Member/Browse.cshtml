@@ -1,0 +1,29 @@
+@model WebApp.ViewModels.Member.BrowseMembersViewModel
+@{
+    ViewBag.Title = "Участники";
+}
+
+<h2>Участники</h2>
+<form asp-action="Create" asp-controller="Member" method="get">
+   <input type="hidden" name="projectId" value="@Model.ProjectId" />
+   <button type="submit">Добавить участника</button>
+</form>
+<table>
+    <thead>
+    <tr>
+        <th>Имя</th>
+        <th>Роль</th>
+        <th>Информация</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var member in Model.Members)
+    {
+        <tr>
+            <td>@member.Name</td>
+            <td>@member.Role.Title</td>
+            <td>@member.Info</td>
+        </tr>
+    }
+    </tbody>
+</table>

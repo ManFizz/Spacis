@@ -1,0 +1,20 @@
+@model IEnumerable<WebApp.Models.Permission>
+@{
+    ViewBag.Title = "Список прав";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<table class="table">
+    <tr>
+        <th>Название</th>
+        <th>Описание</th>
+    </tr>
+    @foreach (var permission in Model)
+    {
+        <tr>
+            <td>@permission.Title</td>
+            <td>@permission.Info</td>
+        </tr>
+    }
+</table>

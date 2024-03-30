@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WebApp.Models;
-using WebApp.SomeModels;
+using WebApp.HelperModels;
 
 var builder = WebApplication.CreateBuilder(args);
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -55,6 +55,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Index}/{action=Index}/{id?}");
+    pattern: "{controller=Account}/{action=Login}/{id?}"
+);
 
 app.Run();

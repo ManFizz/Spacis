@@ -1,50 +1,43 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApp.Models;
-using WebApp.SomeModels;
+using WebApp.HelperModels;
 
 namespace WebApp.Controllers;
 
-[Authorize]
-public class ObjectiveController(UserManager<User> userManager, ApplicationContext db) : Controller
+public class ObjectiveController(UserManager<User> userManager, ApplicationContext db) : BaseController(userManager, db)
 {
-    public async Task<IActionResult> DisplayList()
+    public async Task<IActionResult> Browse()
     {
-        var currentUser = await userManager.GetUserAsync(User);
-        if(currentUser == null)
-            return RedirectToAction("Login", "Account");
-        
-        currentUser = await userManager.Users
-            .Include(u => u.SelectedProject)
-            .SingleOrDefaultAsync(u => u.Id == currentUser.Id);
-        
-        if(currentUser!.SelectedProject == null)
-            return RedirectToAction("DisplayList", "Project");
-        
-        return View(await db.Objectives
+        var redirect = await IsNeedRedirect();
+        if (redirect != null) return redirect;
+
+        var user = await CurrentUser;
+        var objectives = await DbContext.Objectives
             .Include(o => o.Status)
             .Include(o => o.Labels)
             .Include(o => o.Project)
             .Include(o => o.Author)
             .Include(o => o.Members)
-            .Where(o => o.ProjectId == currentUser.SelectedProjectId)
-            .ToListAsync());
+            .Where(o => o.ProjectId == user!.SelectedProjectId)
+            .ToListAsync();
+        
+        return View(objectives);
     }
     
     [HttpPost]
-    public async Task<IActionResult> CreateObjective(Objective objective)
+    public async Task<IActionResult> Create(Objective objective)
     {
-        db.Objectives.Add(objective);
-        await db.SaveChangesAsync();
-        return RedirectToAction("DisplayList");
+        DbContext.Objectives.Add(objective);
+        await DbContext.SaveChangesAsync();
+        return RedirectToAction("Browse");
     }
 
-    public IActionResult GetObjectiveInfo(string sGuid)
+    public IActionResult GetInfo(string sGuid)
     {
         var guid = Guid.Parse(sGuid);
-        var objective = db.Objectives
+        var objective = DbContext.Objectives
             .Include(objective => objective.Labels)
             .FirstOrDefault(o => o.Id == guid);
         

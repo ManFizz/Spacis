@@ -1,0 +1,36 @@
+@model WebApp.ViewModels.Member.CreateMemberViewModel
+
+<h2>Добавление участника</h2>
+
+<form asp-action="Create">
+    <input type="hidden" name="projectId" value="@Model.ProjectId" />
+    <div>
+        <label for="Name">Имя</label>
+        <input type="text" id="Name" name="Name" value="@Model.Name" />
+    </div>
+    <div>
+        <label for="Info">Информация</label>
+        <input type="text" id="Info" name="Info" value="@Model.Info" />
+    </div>
+    <div>
+        <label for="RoleId">Роль</label>
+        <select id="RoleId" name="RoleId">
+            <option value="">Выберите роль</option>
+            @foreach (var role in Model.Roles)
+            {
+                <option value="@role.Id">@role.Title</option>
+            }
+        </select>
+    </div>
+    <div>
+        <label for="UserId">Пользователь</label>
+        <select id="UserId" name="UserId">
+            <option value="">Выберите пользователя</option>
+            @foreach (var user in Model.Users)
+            {
+                <option value="@user.Id">@user.Email</option>
+            }
+        </select>
+    </div>
+    <button type="submit">Добавить участника</button>
+</form>

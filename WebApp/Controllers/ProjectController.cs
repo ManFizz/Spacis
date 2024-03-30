@@ -1,38 +1,64 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApp.Models;
-using WebApp.SomeModels;
+using WebApp.HelperModels;
 
 namespace WebApp.Controllers;
 
-[Authorize]
-public class ProjectController(UserManager<User> userManager, ApplicationContext db) : Controller
+public class ProjectController(UserManager<User> userManager, ApplicationContext db) : BaseController(userManager, db)
 {
-    public Task<IActionResult> DisplayList()
+    public async Task<IActionResult> Browse()
     {
-        return Task.FromResult<IActionResult>(View(db.Projects
+        var redirect = await IsNeedRedirect();
+        if (redirect != null) return redirect;
+
+        var user = await CurrentUser;
+        var projects = await DbContext.Projects
             .Include(p => p.Members)
             .Include(p => p.Objectives)
-            .Include(p => p.Roles)));
+            .Include(p => p.Roles)
+            .Where(p => p.Members.Any(m => string.Equals(m.UserId, user!.Id)))
+            .ToListAsync();
+
+        return View(projects);
     }
-    public ActionResult CreateProject()
+    
+    public async Task<IActionResult> Select()
+    {
+        var redirect = await IsNeedRedirect();
+        if (redirect != null) return redirect;
+
+        var user = await CurrentUser;
+        var projects = await DbContext.Projects
+            .Include(p => p.Members)
+            .Include(p => p.Objectives)
+            .Include(p => p.Roles)
+            .Where(p => p.Members.Any(m => string.Equals(m.UserId, user!.Id)))
+            .ToListAsync();
+        
+        return View(projects);
+    }
+    
+    public ActionResult Create()
     {
         return View();
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<ActionResult> CreateProject(Project project)
+    public async Task<IActionResult> Create(Project project)
     {
+        var redirect = await IsNeedRedirect(CheckState.Login);
+        if (redirect != null) return redirect;
+        
+        var user = await CurrentUser;
         try
         {
             if (ModelState.IsValid)
             {
-                db.Projects.Add(project);
-                await db.SaveChangesAsync();
-                return RedirectToAction("DisplayList");
+                await SeedData.InitNewProject(DbContext, UserManager, user!, project);
+                return RedirectToAction("Browse");
             }
         }
         catch (Exception ex)
@@ -42,27 +68,22 @@ public class ProjectController(UserManager<User> userManager, ApplicationContext
     
         return View(project);
     }
-    
+
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> SelectProject(Guid projectId)
+    public async Task<IActionResult> Select(Guid projectId)
     {
-        var currentUser = await userManager.GetUserAsync(User);
-        if (currentUser == null)
-        {
-            return RedirectToAction("Login", "Account");
-        }
+        var redirect = await IsNeedRedirect(CheckState.Login);
+        if (redirect != null) return redirect;
 
-        var project = await db.Projects.FindAsync(projectId);
+        var user = await CurrentUser;
+        var project = await DbContext.Projects.FindAsync(projectId);
         if (project == null)
-        {
             return NotFound();
-        }
 
-        currentUser.SelectedProject = project;
+        user!.SelectedProject = project;
+        await UserManager.UpdateAsync(user);
 
-        await userManager.UpdateAsync(currentUser);
-
-        return RedirectToAction("DisplayList");
+        return View();
     }
 }
