@@ -4,7 +4,7 @@
 }
 
 <h2>Список задач</h2>
-@* <p><a asp-action="CreateObjective">Добавить задачу</a></p> *@
+<p><a asp-action="Create">Добавить задачу</a></p>
 <div class="d-md-flex">
     <div class="col">
         <table class="table table-hover">
@@ -28,7 +28,7 @@
                     <td>@o.Priority</td>
                     <td>@o.Project.Title</td>
                     <td>@o.Status.Title</td>
-                    <td>@o.Author.UserName</td>
+                    <td>@o.Author.Name</td>
                     <td>@string.Join(", ", o.Labels.Select(l => l.Title))</td>
                     <td>@string.Join(", ", o.Members.Select(m => m.Name))</td>
                 </tr>

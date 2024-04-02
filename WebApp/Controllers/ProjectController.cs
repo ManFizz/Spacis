@@ -10,7 +10,7 @@ public class ProjectController(UserManager<User> userManager, ApplicationContext
 {
     public async Task<IActionResult> Browse()
     {
-        var redirect = await IsNeedRedirect();
+        var redirect = await IsNeedRedirect(CheckState.Login);
         if (redirect != null) return redirect;
 
         var user = await CurrentUser;
@@ -26,7 +26,7 @@ public class ProjectController(UserManager<User> userManager, ApplicationContext
     
     public async Task<IActionResult> Select()
     {
-        var redirect = await IsNeedRedirect();
+        var redirect = await IsNeedRedirect(CheckState.Login);
         if (redirect != null) return redirect;
 
         var user = await CurrentUser;
@@ -38,6 +38,24 @@ public class ProjectController(UserManager<User> userManager, ApplicationContext
             .ToListAsync();
         
         return View(projects);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Select(Guid projectId)
+    {
+        var redirect = await IsNeedRedirect(CheckState.Login);
+        if (redirect != null) return redirect;
+
+        var user = await CurrentUser;
+        var project = await DbContext.Projects.FindAsync(projectId);
+        if (project == null)
+            return NotFound();
+
+        user!.SelectedProject = project;
+        await UserManager.UpdateAsync(user);
+
+        return RedirectToAction(nameof(Select));
     }
     
     public ActionResult Create()
@@ -67,23 +85,5 @@ public class ProjectController(UserManager<User> userManager, ApplicationContext
         }
     
         return View(project);
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Select(Guid projectId)
-    {
-        var redirect = await IsNeedRedirect(CheckState.Login);
-        if (redirect != null) return redirect;
-
-        var user = await CurrentUser;
-        var project = await DbContext.Projects.FindAsync(projectId);
-        if (project == null)
-            return NotFound();
-
-        user!.SelectedProject = project;
-        await UserManager.UpdateAsync(user);
-
-        return View();
     }
 }

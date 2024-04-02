@@ -10,7 +10,7 @@ public class PermissionController(UserManager<User> userManager, ApplicationCont
 {
     public async Task<IActionResult> Browse()
     {
-        var redirect = await IsNeedRedirect();
+        var redirect = await IsNeedRedirect(CheckState.Member);
         if (redirect != null) return redirect;
         
         return View(await DbContext.Permissions

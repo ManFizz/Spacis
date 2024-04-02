@@ -3,26 +3,37 @@
     ViewBag.Title = "Участники";
 }
 
-<h2>Участники</h2>
-<form asp-action="Create" asp-controller="Member" method="get">
-   <input type="hidden" name="projectId" value="@Model.ProjectId" />
+<h2>@ViewBag.Title</h2>
+
+<form asp-action="Create" asp-route-id="@Model.ProjectId" method="get">
    <button type="submit">Добавить участника</button>
 </form>
-<table>
+<table class="table">
     <thead>
-    <tr>
-        <th>Имя</th>
-        <th>Роль</th>
-        <th>Информация</th>
-    </tr>
+        <tr>
+            <th>Имя</th>
+            <th>Роль</th>
+            <th>Информация</th>
+            <th>Действия</th>
+        </tr>
     </thead>
     <tbody>
-    @foreach (var member in Model.Members)
+    @foreach (var m in Model.Members)
     {
         <tr>
-            <td>@member.Name</td>
-            <td>@member.Role.Title</td>
-            <td>@member.Info</td>
+            <td>@m.Name</td>
+            <td>@m.Role.Title</td>
+            <td>@m.Info</td>
+            <td>
+                <div class="d-flex">
+                    <form method="get" asp-action="Edit" asp-route-id="@m.Id">
+                        <button type="submit" class="btn btn-primary">Изменить</button>
+                    </form>
+                    <form method="post" asp-action="Delete" asp-route-id="@m.Id">
+                        <button type="submit" class="btn btn-danger">Удалить</button>
+                    </form>
+                </div>
+            </td>
         </tr>
     }
     </tbody>

@@ -26,4 +26,6 @@ public class Member
     public List<Action> Actions { get; } = [];
 
     public List<Objective> Objectives { get; } = [];
+    
+    public List<Objective> AuthorObjectives { get; } = [];
 }

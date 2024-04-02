@@ -10,7 +10,7 @@ public class LabelController(UserManager<User> userManager, ApplicationContext d
 {
     public async Task<IActionResult> Browse([FromRoute] Guid? projectId)
     {
-        var redirect = await IsNeedRedirect();
+        var redirect = await IsNeedRedirect(CheckState.Member);
         if (redirect != null) return redirect;
         
         var user = await CurrentUser;
@@ -51,12 +51,15 @@ public class LabelController(UserManager<User> userManager, ApplicationContext d
         return RedirectToAction(nameof(Browse));
     }
     
-    public async Task<IActionResult> Edit([FromRoute] Guid id)
+    public async Task<IActionResult> Edit([FromRoute] Guid? id)
     {
         var redirect = await IsNeedRedirect(CheckState.Project);
         if (redirect != null) return redirect;
         
-        var label = await db.Labels.FindAsync(id);
+        if (id == null)
+            return NotFound();
+        
+        var label = await DbContext.Labels.FindAsync(id);
         if (label == null)
             return NotFound();
         
@@ -74,8 +77,8 @@ public class LabelController(UserManager<User> userManager, ApplicationContext d
         if (!ModelState.IsValid)
             return View(label);
         
-        db.Update(label);
-        await db.SaveChangesAsync();
+        DbContext.Update(label);
+        await DbContext.SaveChangesAsync();
         
         return RedirectToAction(nameof(Browse));
     }
@@ -83,12 +86,12 @@ public class LabelController(UserManager<User> userManager, ApplicationContext d
     [HttpPost]
     public async Task<IActionResult> Delete([FromRoute] Guid id)
     {
-        var label = await db.Labels.FindAsync(id);
+        var label = await DbContext.Labels.FindAsync(id);
         if (label == null)
             return RedirectToAction(nameof(Browse));
     
-        db.Labels.Remove(label);
-        await db.SaveChangesAsync();
+        DbContext.Labels.Remove(label);
+        await DbContext.SaveChangesAsync();
     
         return RedirectToAction(nameof(Browse));
     }

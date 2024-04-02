@@ -9,7 +9,7 @@ public class Role
     public Guid Id { get; init; } = Guid.NewGuid();
     
     [Required(ErrorMessage = "Обязательное поле")]
-    [StringLength(256, MinimumLength = 6, ErrorMessage = "Длина названия должна быть от {2} до {1} символов")]
+    [StringLength(256, MinimumLength = 3, ErrorMessage = "Длина названия должна быть от {2} до {1} символов")]
     public string Title { get; set; } = string.Empty;
     
     [StringLength(256)]

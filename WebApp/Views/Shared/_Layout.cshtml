@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Identity
+@using WebApp.HelperModels
 @inject UserManager<User> UserManager
 
 @functions{
@@ -43,71 +44,36 @@
         }
         <hr>
         @{
-            var navigationItems = new[]
+            var navigationItems = new List<NavigationItem>
             {
-                new
-                {
-                    Controller = "Project", Action = "Browse", Icon = "collection", Text = "Проекты", id = 0,
-                    Display = currentUser != null,
-                },
-                new
-                {
-                    Controller = "Objective", Action = "Browse", Icon = "card-checklist", Text = "Задачи", id = 1,
-                    Display = currentUser?.SelectedMember != null,
-                },
-                new
-                {
-                    Controller = "Member", Action = "Browse", Icon = "people", Text = "Участники", id = 2,
-                    Display = currentUser?.SelectedMember != null,
-                },
-                new
-                {
-                    Controller = "Action", Action = "Browse", Icon = "list-columns", Text = "Действия", id = 3,
-                    Display = currentUser?.SelectedMember != null,
-                },
-                new
-                {
-                    Controller = "Role", Action = "Browse", Icon = "person-video", Text = "Роли", id = 4,
-                    Display = currentUser?.SelectedMember != null,
-                },
-                new
-                {
-                    Controller = "Label", Action = "Browse", Icon = "tags", Text = "Метки", id = 5,
-                    Display = currentUser?.SelectedMember != null,
-                },
-                new
-                {
-                    Controller = "Status", Action = "Browse", Icon = "ui-checks-grid", Text = "Статусы", id = 6,
-                    Display = currentUser?.SelectedMember != null,
-                },
-                new
-                {
-                    Controller = "User", Action = "Browse", Icon = "people", Text = "Пользователи", id = 7,
-                    Display = currentUser != null && User.IsInRole("Admin"),
-                },
-                new
-                {
-                    Controller = "Permission", Action = "Browse", Icon = "list-check", Text = "Список прав", id = 8,
-                    Display = currentUser != null && User.IsInRole("Admin"),
-                },
+                new() { Controller = "Project", Action = "Browse", Icon = "collection", Text = "Проекты", Display = currentUser != null },
+                new() { Controller = "Objective", Action = "Browse", Icon = "card-checklist", Text = "Задачи", Display = currentUser?.SelectedMember != null },
+                new() { Controller = "Member", Action = "Browse", Icon = "people", Text = "Участники", Display = currentUser?.SelectedMember != null, },
+                new() { Controller = "Action", Action = "Browse", Icon = "list-columns", Text = "Действия", Display = currentUser?.SelectedMember != null, },
+                new() { Controller = "Role", Action = "Browse", Icon = "person-video", Text = "Роли", Display = currentUser?.SelectedMember != null, },
+                new() { Controller = "Label", Action = "Browse", Icon = "tags", Text = "Метки", Display = currentUser?.SelectedMember != null, },
+                new() { Controller = "Status", Action = "Browse", Icon = "ui-checks-grid", Text = "Статусы", Display = currentUser?.SelectedMember != null, },
+                new() { Controller = "User", Action = "Browse", Icon = "people", Text = "Пользователи", Display = currentUser != null && User.IsInRole("Admin"), },
+                new() { Controller = "Permission", Action = "Browse", Icon = "list-check", Text = "Список прав", Display = currentUser?.SelectedMember != null && User.IsInRole("Admin") },
             };
+
+            var displayedItems = navigationItems.Where(item => item.Display).ToList();
         }
-        
+
         <ul class="nav nav-pills flex-column mb-auto">
-            @foreach (var navItem in navigationItems)
+            @foreach (var item in displayedItems)
             {
-                if (!navItem.Display)
-                    continue;
-                
                 <li class="nav-item">
-                    <a class="nav-link @NavManage(navItem.Controller)" asp-controller="@navItem.Controller" asp-action="@navItem.Action">
-                        <i class="bi bi-@navItem.Icon"></i>
-                        @navItem.Text
+                    <a class="nav-link @NavManage(item.Controller)" asp-controller="@item.Controller" asp-action="@item.Action">
+                        <i class="bi bi-@item.Icon"></i>
+                        @item.Text
                     </a>
                 </li>
             }
         </ul>
+        
         <hr>
+        
         <div class="d-flex">
             @if(currentUser != null)
             {

@@ -6,19 +6,34 @@
 <h2>Список ролей</h2>
 <a asp-action="Create">Добавить роль</a>
 <table class="table">
-    <tr>
-        <th>Название</th>
-        <th>Описание</th>
-        <th>Проект</th>
-        <th>Права</th>
-    </tr>
-    @foreach (var role in Model)
+    <thead>
+        <tr>
+            <th>Название</th>
+            <th>Описание</th>
+            <th>Проект</th>
+            <th>Права</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var r in Model)
     {
         <tr>
-            <td>@role.Title</td>
-            <td>@role.Info</td>
-            <td>@role.Project.Title</td>
-            <td>@string.Join(", ",role.Permissions.Select( p => p.Title))</td>
+            <td>@r.Title</td>
+            <td>@r.Info</td>
+            <td>@r.Project.Title</td>
+            <td>@string.Join(", ",r.Permissions.Select(p => p.Title))</td>
+            <td>
+                <div class="d-flex">
+                    <form method="get" asp-action="Edit" asp-route-id="@r.Id">
+                        <button type="submit" class="btn btn-primary">Изменить</button>
+                    </form>
+                    <form method="post" asp-action="Delete" asp-route-id="@r.Id">
+                        <button type="submit" class="btn btn-danger">Удалить</button>
+                    </form>
+                </div>
+            </td>
         </tr>
     }
+    </tbody>
 </table>

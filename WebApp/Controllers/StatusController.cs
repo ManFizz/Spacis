@@ -10,7 +10,7 @@ public class StatusController(UserManager<User> userManager, ApplicationContext 
 {
     public async Task<IActionResult> Browse([FromRoute] Guid? projectId)
     {
-        var redirect = await IsNeedRedirect();
+        var redirect = await IsNeedRedirect(CheckState.Member);
         if (redirect != null) return redirect;
 
         var user = await CurrentUser;
@@ -55,7 +55,7 @@ public class StatusController(UserManager<User> userManager, ApplicationContext 
         var redirect = await IsNeedRedirect(CheckState.Project);
         if (redirect != null) return redirect;
         
-        var status = await db.Statuses.FindAsync(id);
+        var status = await DbContext.Statuses.FindAsync(id);
         if (status == null)
             return NotFound();
         
@@ -73,8 +73,8 @@ public class StatusController(UserManager<User> userManager, ApplicationContext 
         if (!ModelState.IsValid)
             return View(status);
         
-        db.Update(status);
-        await db.SaveChangesAsync();
+        DbContext.Update(status);
+        await DbContext.SaveChangesAsync();
         
         return RedirectToAction(nameof(Browse));
     }
@@ -82,12 +82,12 @@ public class StatusController(UserManager<User> userManager, ApplicationContext 
     [HttpPost]
     public async Task<IActionResult> Delete([FromRoute] Guid id)
     {
-        var status = await db.Statuses.FindAsync(id);
+        var status = await DbContext.Statuses.FindAsync(id);
         if (status == null)
             return RedirectToAction(nameof(Browse));
     
-        db.Statuses.Remove(status);
-        await db.SaveChangesAsync();
+        DbContext.Statuses.Remove(status);
+        await DbContext.SaveChangesAsync();
     
         return RedirectToAction(nameof(Browse));
     }

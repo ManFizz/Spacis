@@ -11,10 +11,10 @@ public class BaseController : Controller
 {
     protected enum CheckState
     {
-        All = 0,
-        Login = 1,
-        Project = 2,
-        Member = 3,
+        Login = 0,
+        Project = 1,
+        Member = 2,
+        All = 3,
     }
     
     protected readonly UserManager<User> UserManager;
@@ -46,7 +46,7 @@ public class BaseController : Controller
         return null;
     }
 
-    protected async Task<IActionResult?> IsNeedRedirect(CheckState checkState = CheckState.All)
+    protected async Task<IActionResult?> IsNeedRedirect(CheckState checkState)
     {
         var user = await CurrentUser;
         if (user == null)

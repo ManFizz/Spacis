@@ -34,19 +34,33 @@ public sealed class ApplicationContext : IdentityDbContext<User>
     {
         base.OnModelCreating(modelBuilder);
         
+        //Member x Objective
         modelBuilder.Entity<Objective>()
             .HasMany(o => o.Members)
             .WithMany(m => m.Objectives);
         
+        //User x Member
         modelBuilder.Entity<User>()
             .HasMany(u => u.Members)
             .WithOne(m => m.User)
             .HasForeignKey(m => m.UserId);
-        
         modelBuilder.Entity<User>()
             .HasOne(u => u.SelectedMember)
             .WithOne()
             .HasForeignKey<User>(u => u.SelectedMemberId)
             .IsRequired(false);
+
+        //Role x Permission
+        modelBuilder.Entity<Role>()
+            .HasMany(r => r.Permissions)
+            .WithMany(p => p.Roles);
+        
+        //Objective x Member
+        modelBuilder.Entity<Objective>()
+            .HasMany(o => o.Members)
+            .WithMany(m => m.Objectives);
+        modelBuilder.Entity<Objective>()
+            .HasOne<Member>(o => o.Author)
+            .WithMany(m => m.AuthorObjectives);
     }
 }

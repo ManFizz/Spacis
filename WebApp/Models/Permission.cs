@@ -15,4 +15,6 @@ public class Permission
     
     [StringLength(256)]
     public string Info { get; set; } = string.Empty;
+
+    public List<Role> Roles { get; set; } = [];
 }

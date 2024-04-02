@@ -10,7 +10,7 @@ public class ActionController(UserManager<User> userManager, ApplicationContext 
 {
     public async Task<IActionResult> Browse()
     {
-        var redirect = await IsNeedRedirect();
+        var redirect = await IsNeedRedirect(CheckState.Member);
         if (redirect != null) return redirect;
 
         var user = await CurrentUser;
